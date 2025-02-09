@@ -7,25 +7,22 @@ import java.sql.*;
 public class AddBookFrame extends JFrame {
 
     private JTextField bookNameField, authorField, genreField, pagesField, publicationDateField;
-    private JButton saveButton;
     private DashboardPanel dashboardPanel; // Reference to DashboardPanel
-
-    // Database connection details
-    private static final String URL = "jdbc:mysql://localhost:3306/library";
-    private static final String USER = "root";
-    private static final String PASSWORD = "Confractus091205";
+    private JButton saveButton;
 
     public AddBookFrame(DashboardPanel dashboardPanel) {
         this.dashboardPanel = dashboardPanel; // Store reference to DashboardPanel
 
         setTitle("Add Book");
-        setSize(400, 300);
-        setLayout(new BorderLayout());
+        setSize(400, 313);
+        getContentPane().setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
         setLocationRelativeTo(null); // Center the window
 
-        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 5, 5));
-
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
         inputPanel.add(new JLabel("Book Name:"));
         bookNameField = new JTextField();
         inputPanel.add(bookNameField);
@@ -46,10 +43,11 @@ public class AddBookFrame extends JFrame {
         publicationDateField = new JTextField();
         inputPanel.add(publicationDateField);
 
+        getContentPane().add(inputPanel, BorderLayout.CENTER);
+        
         saveButton = new JButton("Save");
-        inputPanel.add(new JLabel()); // Empty label for spacing
-        inputPanel.add(saveButton);
-
+        saveButton.setPreferredSize(new Dimension(56, 50));
+        getContentPane().add(saveButton, BorderLayout.SOUTH);
         add(inputPanel, BorderLayout.CENTER);
 
         saveButton.addActionListener(new ActionListener() {
@@ -60,30 +58,10 @@ public class AddBookFrame extends JFrame {
         });
 
         setVisible(true);
-        createBooksTable();
     }
-
-    private void createBooksTable() {
-        String createTableSQL = "CREATE TABLE IF NOT EXISTS books (" +
-                "book_id INT PRIMARY KEY AUTO_INCREMENT, " +
-                "title VARCHAR(255), " +
-                "author VARCHAR(255), " +
-                "genre VARCHAR(100), " +
-                "pages INT, " +
-                "publication_date DATE, " +
-                "availability VARCHAR(255))";
-
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             Statement statement = connection.createStatement()) {
-            statement.execute(createTableSQL);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error creating table!", "Database Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-
+    
     private void saveBookToDatabase() {
-        try {
+        try (Connection conn = DatabaseConnection.getConnection()) {
             // Validate input fields
             String title = bookNameField.getText().trim();
             String author = authorField.getText().trim();
@@ -110,9 +88,7 @@ public class AddBookFrame extends JFrame {
             String insertSQL = "INSERT INTO books (title, author, genre, pages, publication_date, availability) " +
                     "VALUES (?, ?, ?, ?, ?, ?)";
 
-            try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                 PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
-
+            try (PreparedStatement preparedStatement = conn.prepareStatement(insertSQL)) {
                 preparedStatement.setString(1, title);
                 preparedStatement.setString(2, author);
                 preparedStatement.setString(3, genre);
@@ -136,4 +112,6 @@ public class AddBookFrame extends JFrame {
             e.printStackTrace();
         }
     }
+    
+    
 }

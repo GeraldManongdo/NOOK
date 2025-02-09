@@ -20,6 +20,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import java.sql.Statement;
 
 public class Login extends JPanel {
 
@@ -28,6 +29,8 @@ public class Login extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private Main mainFrame;
+    
+    Connection conn = DatabaseConnection.getConnection();
 
     public Login(Main mainFrame) {
         // Getting the Frame from the Main.java
@@ -162,35 +165,25 @@ public class Login extends JPanel {
             String username = usernameField.getText();
             char[] password = passwordField.getPassword();
 
-            try {
-                // Establish a connection to the database
-                Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "Confractus091205");
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement preparedStatement = conn.prepareStatement("SELECT * FROM users WHERE email = ? AND password = ?")) {
 
-                // Prepare a statement to query the database
-                String query = "SELECT * FROM users WHERE email = ? AND password = ?";
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, username);
                 preparedStatement.setString(2, new String(password));
 
-                // Execute the query
-                ResultSet resultSet = preparedStatement.executeQuery();
-
-                // Check if a matching user was found
-                if (resultSet.next()) {
-                    mainFrame.switchToMainFrame();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Invalid username or password");
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        mainFrame.switchToMainFrame();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Invalid username or password");
+                    }
                 }
-
-                // Close the resources
-                resultSet.close();
-                preparedStatement.close();
-                connection.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Database error: " + ex.getMessage());
+                JOptionPane.showMessageDialog(null, "Database error: " + ex.getMessage());
             }
         });
+
         // Form Ended
     }
 }

@@ -1,35 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import javax.swing.border.EmptyBorder;
 
 public class BookViewFrame extends JFrame {
     private static final long serialVersionUID = 1L;
     private JTextField textField, textField_1, textField_2, textField_3, textField_4;
     private int bookId;
-    private Connection connection;
+    private Connection conn;
 
     public BookViewFrame(int bookId) {
         this.bookId = bookId;
+        this.conn = DatabaseConnection.getConnection(); // Get the connection
+
         setTitle("View Book");
-        setBounds(200, 200, 432, 448);
+        setBounds(200, 200, 432, 357);
         setResizable(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout());
 
-        // Database Connection
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "Confractus091205");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Database Connection Failed!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
         JPanel panel = new JPanel();
         panel.setLayout(null);
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -69,52 +58,103 @@ public class BookViewFrame extends JFrame {
         textField_4.setBounds(112, 185, 283, 31);
         panel.add(textField_4);
 
+        JButton availableButton = new JButton("Available");
+        availableButton.addActionListener(e -> updateBookAvailability("Available"));
+        availableButton.setBounds(111, 224, 141, 31);
+        panel.add(availableButton);
+
+        JButton unavailableButton = new JButton("Unavailable");
+        unavailableButton.addActionListener(e -> updateBookAvailability("Unavailable"));
+        unavailableButton.setBounds(255, 224, 141, 31);
+        panel.add(unavailableButton);
+
         JButton saveButton = new JButton("Save");
-        saveButton.setBounds(160, 250, 100, 40);
+        saveButton.addActionListener(e -> saveBookToDatabase());
+        saveButton.setBounds(112, 265, 283, 31);
         panel.add(saveButton);
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateBook();
-            }
-        });
 
         loadBookData();
         setVisible(true);
     }
 
     private void loadBookData() {
-        try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM books WHERE id = ?");
+        String query = "SELECT title, author, genre, pages, publication_date FROM books WHERE book_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, bookId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                textField.setText(rs.getString("name"));
+                textField.setText(rs.getString("title"));
                 textField_1.setText(rs.getString("author"));
                 textField_2.setText(rs.getString("genre"));
                 textField_3.setText(String.valueOf(rs.getInt("pages")));
-                textField_4.setText(rs.getString("publication"));
+                textField_4.setText(rs.getString("publication_date"));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Failed to load book data!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Failed to load book data!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void updateBook() {
-        try {
-            PreparedStatement stmt = connection.prepareStatement(
-                "UPDATE books SET name = ?, author = ?, genre = ?, pages = ?, publication = ? WHERE id = ?");
-            stmt.setString(1, textField.getText());
-            stmt.setString(2, textField_1.getText());
-            stmt.setString(3, textField_2.getText());
-            stmt.setInt(4, Integer.parseInt(textField_3.getText()));
-            stmt.setString(5, textField_4.getText());
-            stmt.setInt(6, bookId);
+    private void updateBookAvailability(String status) {
+        String query = "UPDATE books SET availability = ? WHERE book_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, status);
+            stmt.setInt(2, bookId);
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(this, "Book updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            dispose();
+
+            DashboardPanel.reloadDashboard(); // This will refresh the dashboard panel
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Failed to update book!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Failed to update availability!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+    private void saveBookToDatabase() {
+        try {
+            // Validate input fields
+            String title = textField.getText().trim();
+            String author = textField_1.getText().trim();
+            String genre = textField_2.getText().trim();
+            String publicationDate = textField_4.getText().trim();
+
+            if (title.isEmpty() || author.isEmpty() || genre.isEmpty() || publicationDate.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill in all fields!", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            int pages;
+            try {
+                pages = Integer.parseInt(textField_3.getText().trim());
+                if (pages <= 0) {
+                    JOptionPane.showMessageDialog(this, "Pages must be a positive number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid number format for Pages.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            String updateSQL = "UPDATE books SET title = ?, author = ?, genre = ?, pages = ?, publication_date = ? WHERE book_id = ?";
+
+            try (PreparedStatement preparedStatement = conn.prepareStatement(updateSQL)) {
+                preparedStatement.setString(1, title);
+                preparedStatement.setString(2, author);
+                preparedStatement.setString(3, genre);
+                preparedStatement.setInt(4, pages);
+                preparedStatement.setString(5, publicationDate);
+                preparedStatement.setInt(6, bookId);
+
+                int rowsUpdated = preparedStatement.executeUpdate();
+                if (rowsUpdated > 0) {
+                    JOptionPane.showMessageDialog(this, "Book details updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    DashboardPanel.reloadDashboard(); // This will refresh the dashboard panel
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to update book details.", "Database Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database error: Could not update data.\n" + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 }

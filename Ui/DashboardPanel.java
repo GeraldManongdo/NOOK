@@ -7,7 +7,7 @@ import javax.swing.border.EmptyBorder;
 public class DashboardPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    public JPanel Maindashboard = new JPanel();
+    public static JPanel Maindashboard = new JPanel();
     private JFrame parentFrame; // Reference to parent frame
 
     public DashboardPanel(JFrame parentFrame) {
@@ -116,11 +116,13 @@ public class DashboardPanel extends JPanel {
     }
 
     // Reload Dashboard when AddBookFrame closes
-    public void reloadDashboard() {
+    public static void reloadDashboard() {
         Maindashboard.removeAll();
         BookDashboard bookDashboard = new BookDashboard();
         Maindashboard.add(bookDashboard, BorderLayout.CENTER);
         Maindashboard.revalidate();
         Maindashboard.repaint();
     }
+    
+
 }
