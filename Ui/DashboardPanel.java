@@ -51,6 +51,14 @@ public class DashboardPanel extends JPanel {
         btnDashboard.setForeground(Color.decode("#32418c"));
         Navigation.add(btnDashboard);
         btnDashboard.addActionListener(e -> reloadDashboard());
+        
+        JButton btnBook = new JButton("Book");
+        btnBook.setFont(new Font("Tahoma", Font.BOLD, 12));
+        btnBook.setBorder(null);
+        btnBook.setBackground(Color.decode("#f3f3f7"));
+        btnBook.setForeground(Color.decode("#32418c"));
+        Navigation.add(btnBook);
+        btnBook.addActionListener(e -> {loadBooksDashboard();});
 
         JButton btnAddBook = new JButton("Add Book");
         btnAddBook.setFont(new Font("Tahoma", Font.BOLD, 12));
@@ -75,13 +83,15 @@ public class DashboardPanel extends JPanel {
         btnHistory.setBackground(Color.decode("#f3f3f7"));
         btnHistory.setForeground(Color.decode("#32418c"));
         Navigation.add(btnHistory);
-        btnHistory.addActionListener(e -> {
-            Maindashboard.removeAll();
-            HistoryDashboard historyDashboard = new HistoryDashboard();
-            Maindashboard.add(historyDashboard, BorderLayout.CENTER);
-            Maindashboard.revalidate();
-            Maindashboard.repaint();
-        });
+        btnHistory.addActionListener(e -> {loadHistoryDashboard();});
+        
+        JButton btnPenalty = new JButton("Penalty");
+        btnPenalty.setFont(new Font("Tahoma", Font.BOLD, 12));
+        btnPenalty.setBorder(null);
+        btnPenalty.setBackground(Color.decode("#f3f3f7"));
+        btnPenalty.setForeground(Color.decode("#32418c"));
+        Navigation.add(btnPenalty);
+        btnPenalty.addActionListener(e -> {loadPenaltyDashboard();});
 
         // Footer Navigation
         JPanel footerNav = new JPanel();
@@ -118,8 +128,33 @@ public class DashboardPanel extends JPanel {
     // Reload Dashboard when AddBookFrame closes
     public static void reloadDashboard() {
         Maindashboard.removeAll();
+        StatsDashboard statsDashboard = new StatsDashboard();
+        Maindashboard.add(statsDashboard, BorderLayout.CENTER);
+        Maindashboard.revalidate();
+        Maindashboard.repaint();
+    }
+    
+    public static void loadBooksDashboard() {
+        Maindashboard.removeAll();
         BookDashboard bookDashboard = new BookDashboard();
         Maindashboard.add(bookDashboard, BorderLayout.CENTER);
+        Maindashboard.revalidate();
+        Maindashboard.repaint();
+    
+    }
+    
+    public static void loadPenaltyDashboard() {
+        Maindashboard.removeAll();
+        PenaltyDashboard penaltyDashboard = new PenaltyDashboard();
+        Maindashboard.add(penaltyDashboard, BorderLayout.CENTER);
+        Maindashboard.revalidate();
+        Maindashboard.repaint();
+    }
+    
+    public static void loadHistoryDashboard() {
+        Maindashboard.removeAll();
+        HistoryDashboard historyDashboard = new HistoryDashboard();
+        Maindashboard.add(historyDashboard, BorderLayout.CENTER);
         Maindashboard.revalidate();
         Maindashboard.repaint();
     }

@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -13,13 +14,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-public class HistoryDashboard extends JPanel {
+public class PenaltyDashboard extends JPanel {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
     private DefaultTableModel model;
     private JTable table;
 
-    public HistoryDashboard() {
+    public PenaltyDashboard() {
         setLayout(new BorderLayout());
 
         // Top Panel with Image Header
@@ -36,7 +37,7 @@ public class HistoryDashboard extends JPanel {
         add(panel, BorderLayout.NORTH);
 
         // Initialize Table
-        String[] columnNames = {"History ID", "User Name", "Book Name", "Borrow Date", "Return Date", "Status"};
+        String[] columnNames = {"History ID", "User Name", "Book Name","Penalty amount", "Reason", "Status", "Date issued"};
         model = new DefaultTableModel(columnNames, 0);
         table = new JTable(model);
         table.setRowHeight(30);
@@ -54,23 +55,24 @@ public class HistoryDashboard extends JPanel {
     private void loadHistoryFromDatabase() {
         try (Connection conn = DatabaseConnection.getConnection()) {
             // Optimized Query with JOIN
-            String query = "SELECT bh.history_id, u.name AS user_name, b.title AS book_title, " +
-                           "bh.borrow_date, bh.return_date, bh.status " +
-                           "FROM borrow_history bh " +
-                           "JOIN users u ON bh.user_id = u.student_id " +
-                           "JOIN books b ON bh.book_id = b.book_id";
+            String query = "SELECT p.penalty_id, u.name AS user_name, b.title AS book_title, " +
+                           "p.amount, p.amount, p.reason, p.status, p.date_issued " +
+                           "FROM penalty p " +
+                           "JOIN users u ON p.user_id = u.student_id " +
+                           "JOIN books b ON p.book_id = b.book_id";
 
             try (PreparedStatement stmt = conn.prepareStatement(query);
                  ResultSet rs = stmt.executeQuery()) {
 
                 while (rs.next()) {
                     Object[] row = {
-                        rs.getInt("history_id"),
+                        rs.getInt("penalty_id"),
                         rs.getString("user_name"),
                         rs.getString("book_title"),
-                        rs.getDate("borrow_date"),
-                        rs.getDate("return_date"),
-                        rs.getString("status")
+                        rs.getBigDecimal("amount"),
+                        rs.getString("reason"),
+                        rs.getString("status"),
+                        rs.getDate("date_issued")
                     };
                     model.addRow(row);
                 }
@@ -85,4 +87,5 @@ public class HistoryDashboard extends JPanel {
             JOptionPane.showMessageDialog(this, "Error loading history: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }
