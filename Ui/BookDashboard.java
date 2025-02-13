@@ -4,8 +4,12 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.border.EmptyBorder;
 
 public class BookDashboard extends JPanel {
+    private static final long serialVersionUID = 1L;
     private DefaultTableModel model;
     private JTable table;
     
@@ -14,7 +18,7 @@ public class BookDashboard extends JPanel {
 
         // Top Panel with Image Header
         JPanel panel = new JPanel();
-        panel.setPreferredSize(new Dimension(10, 200));
+        panel.setPreferredSize(new Dimension(10, 100));
         panel.setLayout(new BorderLayout(0, 0));
         
         JLabel lblNewLabel_1 = new JLabel("");
@@ -24,7 +28,46 @@ public class BookDashboard extends JPanel {
         panel.add(lblNewLabel_1, BorderLayout.CENTER);
         
         add(panel, BorderLayout.NORTH);
+        
+        JPanel panel_1 = new JPanel();
+        add(panel_1, BorderLayout.CENTER);
+        panel_1.setLayout(new BorderLayout(0, 0));
+        
+        JPanel panel_2 = new JPanel();
+        panel_2.setPreferredSize(new Dimension(10, 50));
+        panel_1.add(panel_2, BorderLayout.NORTH);
+        panel_2.setLayout(new GridLayout(1, 0, 0, 0));
+        
+        JLabel lblNewLabel = new JLabel("Book Management List\r\n");
+        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
+        lblNewLabel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel_2.add(lblNewLabel);
+        
+        JPanel panel_3 = new JPanel();
+        panel_3.setBorder(new EmptyBorder(10, 10, 10, 10));
+        panel_2.add(panel_3);
 
+        panel_3.setLayout(new BorderLayout(0, 0));
+
+        
+        JButton btnAddBook = new JButton("Add Book");
+        btnAddBook.setPreferredSize(new Dimension(150, 50));
+        btnAddBook.setFont(new Font("Tahoma", Font.BOLD, 12));
+        btnAddBook.setBorder(null);
+        btnAddBook.setBackground(Color.decode("#32418c"));
+        btnAddBook.setForeground(Color.WHITE);
+        btnAddBook.setFocusPainted(false);
+        btnAddBook.setContentAreaFilled(false);
+        btnAddBook.setOpaque(true);
+        panel_3.add(btnAddBook, BorderLayout.EAST);
+
+        // Open AddBookFrame and pass DashboardPanel reference
+        btnAddBook.addActionListener(e -> {
+            AddBookFrame addBookFrame = new AddBookFrame(this);
+            addBookFrame.setLocationRelativeTo(null);
+            addBookFrame.setVisible(true);
+        });
+        
         // Initialize Table
         String[] columnNames = {"Book ID", "Book Name", "Author", "Genre", "Pages", "Publication Date", "Availability", "Actions"};
         model = new DefaultTableModel(columnNames, 0);
@@ -37,7 +80,7 @@ public class BookDashboard extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        add(scrollPane, BorderLayout.CENTER);
+        panel_1.add(scrollPane, BorderLayout.CENTER);
 
         // Load books from database
         loadBooksFromDatabase();
@@ -159,4 +202,12 @@ public class BookDashboard extends JPanel {
         button.setPreferredSize(new Dimension(70, 25));
         return button;
     }
+
+    public void loadBooksDashboard() {
+        model.setRowCount(0); // Clear existing rows
+        loadBooksFromDatabase(); // Reload books from the database
+        this.revalidate();
+        this.repaint();
+    }
+
 }

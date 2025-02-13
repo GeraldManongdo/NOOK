@@ -37,6 +37,7 @@ public class StatsDashboard extends JScrollPane {
         setPreferredSize(new Dimension(1080, 720));
 
         JPanel contentPanel = new JPanel();
+        contentPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
         contentPanel.setPreferredSize(new Dimension(1080, 820)); 
         setViewportView(contentPanel);
         contentPanel.setLayout(new BorderLayout(0, 0));
@@ -47,6 +48,7 @@ public class StatsDashboard extends JScrollPane {
         panel.setLayout(new GridLayout(0, 1, 0, 0));
 
         JLabel lblNewLabel = new JLabel("Dashboard");
+        lblNewLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
         lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 25));
         panel.add(lblNewLabel);
 
@@ -108,59 +110,82 @@ public class StatsDashboard extends JScrollPane {
         panel_2.setBackground(Color.WHITE);
         MainDashboardPanel.add(panel_2, BorderLayout.CENTER);
         chartPanel = new ChartPanel(createChart(createDataset(2024)));
-        chartPanel.setPreferredSize(new Dimension(780, 420));
+        chartPanel.setPreferredSize(new Dimension(830, 420));
         panel_2.add(chartPanel, BorderLayout.CENTER);
+        
+        
         
         // Bottom side where i put Tables
         JPanel panel_5 = new JPanel();
-        panel_5.setPreferredSize(new Dimension(10, 200));
-        panel_5.setLayout(new GridLayout(1, 3, 10, 0)); // 3 columns
-        panel_5.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        panel_5.setPreferredSize(new Dimension(10, 208));
+        panel_5.setBorder(new EmptyBorder(10, 20, 20, 20));
         MainDashboardPanel.add(panel_5, BorderLayout.SOUTH);
+        panel_5.setLayout(new BorderLayout(0, 0));
+        
+        JLabel lblForPanel_5 = new JLabel("Records");
+        lblForPanel_5.setFont(new Font("Tahoma", Font.BOLD, 20));
+        panel_5.add(lblForPanel_5, BorderLayout.NORTH);
+        
+		JPanel tableColumnDashboard = new JPanel();
+		panel_5.add(tableColumnDashboard, BorderLayout.CENTER);
+		tableColumnDashboard.setLayout(new GridLayout(0, 3, 20, 0));
+		
+		// Books Table
+		JPanel BookTablePanel = new JPanel();
+		BookTablePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+		tableColumnDashboard.add(BookTablePanel);
+		BookTablePanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblForBookTable = new JLabel("List Of Books");
+		lblForBookTable.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblForBookTable.setPreferredSize(new Dimension(62, 20));
+		BookTablePanel.add(lblForBookTable, BorderLayout.NORTH);
 
-        // Books Table
         String[] bookColumns = {"Book ID", "Title", "Pages"};
         DefaultTableModel bookModel = new DefaultTableModel(bookColumns, 0);
         JTable bookTable = new JTable(bookModel);
         bookTable.setRowHeight(20); // Adjust row height
         fetchTableData(bookModel, "SELECT book_id, title, pages FROM books LIMIT 5");
         JScrollPane bookScrollPane = new JScrollPane(bookTable);
-        panel_5.add(bookScrollPane);
-        bookTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) { // Single-click event
-                    dashboardPanel.loadBooksDashboard();
-                }
-            }
-        });
-
+        BookTablePanel.add(bookScrollPane);
+        
         // Users Table
-        String[] userColumns = {"User ID", "Name", "Role"};
-        DefaultTableModel userModel = new DefaultTableModel(userColumns, 0);
-        JTable userTable = new JTable(userModel);
-        userTable.setRowHeight(20);
-        fetchTableData(userModel, "SELECT student_id, name, role FROM users LIMIT 5");
-        JScrollPane userScrollPane = new JScrollPane(userTable);
-        panel_5.add(userScrollPane);
-
-        // Penalties Table
-        String[] penaltyColumns = {"Penalty ID", "Reason", "Status"};
-        DefaultTableModel penaltyModel = new DefaultTableModel(penaltyColumns, 0);
-        JTable penaltyTable = new JTable(penaltyModel);
-        penaltyTable.setRowHeight(20);
-        fetchTableData(penaltyModel, "SELECT penalty_id, reason, status FROM penalty LIMIT 5");
-        JScrollPane penaltyScrollPane = new JScrollPane(penaltyTable);
-        panel_5.add(penaltyScrollPane);
-        penaltyTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 1) { // Single-click event
-                    dashboardPanel.loadPenaltyDashboard();
-                }
-            }
-        });
-
+        JPanel UserTablePanel = new JPanel();
+        UserTablePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+		tableColumnDashboard.add(UserTablePanel);
+		UserTablePanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblForUserTable = new JLabel("List Of User");
+		lblForUserTable.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblForUserTable.setPreferredSize(new Dimension(62, 20));
+		UserTablePanel.add(lblForUserTable, BorderLayout.NORTH);
+		
+	    String[] userColumns = {"User ID", "Name", "Role"};
+	    DefaultTableModel userModel = new DefaultTableModel(userColumns, 0);
+	    JTable userTable = new JTable(userModel);
+	    userTable.setRowHeight(20);
+	    fetchTableData(userModel, "SELECT user_id, name, role FROM users LIMIT 5");
+	    JScrollPane userScrollPane = new JScrollPane(userTable);
+	    UserTablePanel.add(userScrollPane);
+		
+	    // Penalties Table
+		JPanel PenaltyTablePanel = new JPanel();
+		PenaltyTablePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
+		tableColumnDashboard.add(PenaltyTablePanel);
+		PenaltyTablePanel.setLayout(new BorderLayout(0, 0));
+		
+		JLabel lblForPenaltyTable = new JLabel("List Of Penalty");
+		lblForPenaltyTable.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblForPenaltyTable.setPreferredSize(new Dimension(62, 20));
+		PenaltyTablePanel.add(lblForPenaltyTable, BorderLayout.NORTH);
+		
+	    String[] penaltyColumns = {"Penalty ID", "Reason", "Status"};
+	    DefaultTableModel penaltyModel = new DefaultTableModel(penaltyColumns, 0);
+	    JTable penaltyTable = new JTable(penaltyModel);
+	    penaltyTable.setRowHeight(20);
+	    fetchTableData(penaltyModel, "SELECT penalty_id, reason, status FROM penalty LIMIT 5");
+	    JScrollPane penaltyScrollPane = new JScrollPane(penaltyTable);
+	    PenaltyTablePanel.add(penaltyScrollPane);
 
     }
     

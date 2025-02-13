@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 public class BookViewFrame extends JFrame {
     private static final long serialVersionUID = 1L;
     private JTextField textField, textField_1, textField_2, textField_3, textField_4;
+    private JComboBox<String> comboBox;
     private int bookId;
     private Connection conn;
 
@@ -57,28 +58,27 @@ public class BookViewFrame extends JFrame {
         textField_4 = new JTextField(20);
         textField_4.setBounds(112, 185, 283, 31);
         panel.add(textField_4);
-
-        JButton availableButton = new JButton("Available");
-        availableButton.addActionListener(e -> updateBookAvailability("Available"));
-        availableButton.setBounds(111, 224, 141, 31);
-        panel.add(availableButton);
-
-        JButton unavailableButton = new JButton("Unavailable");
-        unavailableButton.addActionListener(e -> updateBookAvailability("Unavailable"));
-        unavailableButton.setBounds(255, 224, 141, 31);
-        panel.add(unavailableButton);
+        
+        String[] options = {"Available", "Borrowed", "Unavailable"};
+        comboBox = new JComboBox<>(options);
+        comboBox.setBounds(112, 223, 283, 31);
+        panel.add(comboBox);
 
         JButton saveButton = new JButton("Save");
         saveButton.addActionListener(e -> saveBookToDatabase());
         saveButton.setBounds(112, 265, 283, 31);
         panel.add(saveButton);
+        
+        JLabel label_4_1 = new JLabel("Availability:");
+        label_4_1.setBounds(21, 224, 92, 26);
+        panel.add(label_4_1);
 
         loadBookData();
         setVisible(true);
     }
 
     private void loadBookData() {
-        String query = "SELECT title, author, genre, pages, publication_date FROM books WHERE book_id = ?";
+        String query = "SELECT title, author, genre, pages, publication_date, availability FROM books WHERE book_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, bookId);
             ResultSet rs = stmt.executeQuery();
@@ -88,22 +88,14 @@ public class BookViewFrame extends JFrame {
                 textField_2.setText(rs.getString("genre"));
                 textField_3.setText(String.valueOf(rs.getInt("pages")));
                 textField_4.setText(rs.getString("publication_date"));
+                String availability = rs.getString("availability");
+
+                if (availability != null) {
+                    comboBox.setSelectedItem(availability);
+                }
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Failed to load book data!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void updateBookAvailability(String status) {
-        String query = "UPDATE books SET availability = ? WHERE book_id = ?";
-        try (PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, status);
-            stmt.setInt(2, bookId);
-            stmt.executeUpdate();
-
-            DashboardPanel.reloadDashboard(); // This will refresh the dashboard panel
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Failed to update availability!\n" + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -115,8 +107,9 @@ public class BookViewFrame extends JFrame {
             String author = textField_1.getText().trim();
             String genre = textField_2.getText().trim();
             String publicationDate = textField_4.getText().trim();
+            String availability = (String) comboBox.getSelectedItem();
 
-            if (title.isEmpty() || author.isEmpty() || genre.isEmpty() || publicationDate.isEmpty()) {
+            if (title.isEmpty() || author.isEmpty() || genre.isEmpty() || publicationDate.isEmpty() || availability.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields!", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -133,7 +126,7 @@ public class BookViewFrame extends JFrame {
                 return;
             }
 
-            String updateSQL = "UPDATE books SET title = ?, author = ?, genre = ?, pages = ?, publication_date = ? WHERE book_id = ?";
+            String updateSQL = "UPDATE books SET title = ?, author = ?, genre = ?, pages = ?, publication_date = ?, availability = ? WHERE book_id = ?";
 
             try (PreparedStatement preparedStatement = conn.prepareStatement(updateSQL)) {
                 preparedStatement.setString(1, title);
@@ -141,12 +134,12 @@ public class BookViewFrame extends JFrame {
                 preparedStatement.setString(3, genre);
                 preparedStatement.setInt(4, pages);
                 preparedStatement.setString(5, publicationDate);
-                preparedStatement.setInt(6, bookId);
+                preparedStatement.setString(6, availability);
+                preparedStatement.setInt(7, bookId);
 
                 int rowsUpdated = preparedStatement.executeUpdate();
                 if (rowsUpdated > 0) {
-                    JOptionPane.showMessageDialog(this, "Book details updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    DashboardPanel.reloadDashboard(); // This will refresh the dashboard panel
+                    DashboardPanel.loadBooksDashboard(); // This will refresh the dashboard panel
                     dispose();
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to update book details.", "Database Error", JOptionPane.ERROR_MESSAGE);

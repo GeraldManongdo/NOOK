@@ -46,11 +46,13 @@ public class Main extends JFrame {
 
     private void createUserTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS users (" +
-                "student_id INT PRIMARY KEY AUTO_INCREMENT, " +
+                "user_id INT PRIMARY KEY AUTO_INCREMENT, " +
                 "name VARCHAR(255), " +
                 "role ENUM('student', 'admin'), " +
                 "email VARCHAR(255), " +
-                "password VARCHAR(255))";
+                "password VARCHAR(255), " +
+                "section VARCHAR(255), " +
+                "number VARCHAR(255)) ";
 
         executeUpdate(createTableSQL, "Error creating users table!");
     }
@@ -76,7 +78,7 @@ public class Main extends JFrame {
                 "borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 "return_date DATETIME NULL, " +
                 "status ENUM('borrowed', 'returned') DEFAULT 'borrowed', " +
-                "FOREIGN KEY (user_id) REFERENCES users(student_id), " + // Fixed FK reference
+                "FOREIGN KEY (user_id) REFERENCES users(user_id), " + // Fixed FK reference
                 "FOREIGN KEY (book_id) REFERENCES books(book_id))";
 
         executeUpdate(createTableSQL, "Error creating borrow_history table!");
@@ -91,7 +93,7 @@ public class Main extends JFrame {
                 "reason ENUM('late_return', 'lost_book', 'damage') NOT NULL, " +
                 "status ENUM('unpaid', 'paid') DEFAULT 'unpaid', " +
                 "date_issued DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                "FOREIGN KEY (user_id) REFERENCES users(student_id), " +
+                "FOREIGN KEY (user_id) REFERENCES users(user_id), " +
                 "FOREIGN KEY (book_id) REFERENCES books(book_id))";
 
         executeUpdate(createTableSQL, "Error creating penalty table!");

@@ -58,40 +58,29 @@ public class DashboardPanel extends JPanel {
         btnBook.setBackground(Color.decode("#f3f3f7"));
         btnBook.setForeground(Color.decode("#32418c"));
         Navigation.add(btnBook);
-        btnBook.addActionListener(e -> {loadBooksDashboard();});
-
-        JButton btnAddBook = new JButton("Add Book");
-        btnAddBook.setFont(new Font("Tahoma", Font.BOLD, 12));
-        btnAddBook.setBorder(null);
-        btnAddBook.setBackground(Color.decode("#f3f3f7"));
-        btnAddBook.setForeground(Color.decode("#32418c"));
-        btnAddBook.setFocusPainted(false);
-        btnAddBook.setContentAreaFilled(false);
-        btnAddBook.setOpaque(true);
-        Navigation.add(btnAddBook);
-
-        // Open AddBookFrame and pass DashboardPanel reference
-        btnAddBook.addActionListener(e -> {
-            AddBookFrame addBookFrame = new AddBookFrame(this);
-            addBookFrame.setLocationRelativeTo(null);
-            addBookFrame.setVisible(true);
+        btnBook.addActionListener(e -> {
+            Maindashboard.removeAll();
+            BookDashboard bookDashboard = new BookDashboard();
+            Maindashboard.add(bookDashboard, BorderLayout.CENTER);
+            Maindashboard.revalidate();
+            Maindashboard.repaint();
         });
 
-        JButton btnHistory = new JButton("History");
+
+        JButton btnHistory = new JButton("Records");
         btnHistory.setFont(new Font("Tahoma", Font.BOLD, 12));
         btnHistory.setBorder(null);
         btnHistory.setBackground(Color.decode("#f3f3f7"));
         btnHistory.setForeground(Color.decode("#32418c"));
         Navigation.add(btnHistory);
-        btnHistory.addActionListener(e -> {loadHistoryDashboard();});
+        btnHistory.addActionListener(e -> {
+            Maindashboard.removeAll();
+            RecordTablesPanel recordTablesPanel = new RecordTablesPanel();
+            Maindashboard.add(recordTablesPanel, BorderLayout.CENTER);
+            Maindashboard.revalidate();
+            Maindashboard.repaint();
+        });
         
-        JButton btnPenalty = new JButton("Penalty");
-        btnPenalty.setFont(new Font("Tahoma", Font.BOLD, 12));
-        btnPenalty.setBorder(null);
-        btnPenalty.setBackground(Color.decode("#f3f3f7"));
-        btnPenalty.setForeground(Color.decode("#32418c"));
-        Navigation.add(btnPenalty);
-        btnPenalty.addActionListener(e -> {loadPenaltyDashboard();});
 
         // Footer Navigation
         JPanel footerNav = new JPanel();
@@ -133,31 +122,16 @@ public class DashboardPanel extends JPanel {
         Maindashboard.revalidate();
         Maindashboard.repaint();
     }
-    
     public static void loadBooksDashboard() {
         Maindashboard.removeAll();
         BookDashboard bookDashboard = new BookDashboard();
         Maindashboard.add(bookDashboard, BorderLayout.CENTER);
         Maindashboard.revalidate();
         Maindashboard.repaint();
-    
     }
     
-    public static void loadPenaltyDashboard() {
-        Maindashboard.removeAll();
-        PenaltyDashboard penaltyDashboard = new PenaltyDashboard();
-        Maindashboard.add(penaltyDashboard, BorderLayout.CENTER);
-        Maindashboard.revalidate();
-        Maindashboard.repaint();
-    }
-    
-    public static void loadHistoryDashboard() {
-        Maindashboard.removeAll();
-        HistoryDashboard historyDashboard = new HistoryDashboard();
-        Maindashboard.add(historyDashboard, BorderLayout.CENTER);
-        Maindashboard.revalidate();
-        Maindashboard.repaint();
-    }
+   
+
     
 
 }

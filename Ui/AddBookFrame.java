@@ -7,11 +7,11 @@ import java.sql.*;
 public class AddBookFrame extends JFrame {
 
     private JTextField bookNameField, authorField, genreField, pagesField, publicationDateField;
-    private DashboardPanel dashboardPanel; // Reference to DashboardPanel
+    private BookDashboard dashboardPanel; // Reference to DashboardPanel
     private JButton saveButton;
 
-    public AddBookFrame(DashboardPanel dashboardPanel) {
-        this.dashboardPanel = dashboardPanel; // Store reference to DashboardPanel
+    public AddBookFrame(BookDashboard bookDashboard) {
+        this.dashboardPanel = bookDashboard; // Store reference to DashboardPanel
 
         setTitle("Add Book");
         setSize(400, 313);
@@ -94,14 +94,14 @@ public class AddBookFrame extends JFrame {
                 preparedStatement.setString(3, genre);
                 preparedStatement.setInt(4, pages);
                 preparedStatement.setString(5, publicationDate);
-                preparedStatement.setString(6, "available");
+                preparedStatement.setString(6, "Available");
 
                 int rowsInserted = preparedStatement.executeUpdate();
                 if (rowsInserted > 0) {
                     JOptionPane.showMessageDialog(this, "Book added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     dispose(); // Close the window
                     if (dashboardPanel != null) {
-                        dashboardPanel.reloadDashboard(); // Reload Dashboard
+                        dashboardPanel.loadBooksDashboard(); // Reload Dashboard
                     }
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to add the book.", "Database Error", JOptionPane.ERROR_MESSAGE);
