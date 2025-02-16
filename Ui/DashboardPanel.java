@@ -81,6 +81,20 @@ public class DashboardPanel extends JPanel {
             Maindashboard.repaint();
         });
         
+        JButton btnTransaction = new JButton("Transaction");
+        btnTransaction.setFont(new Font("Tahoma", Font.BOLD, 12));
+        btnTransaction.setBorder(null);
+        btnTransaction.setBackground(Color.decode("#f3f3f7"));
+        btnTransaction.setForeground(Color.decode("#32418c"));
+        Navigation.add(btnTransaction);
+        btnTransaction.addActionListener(e -> {
+            Maindashboard.removeAll();
+            TransactionPanel transactionPanel = new TransactionPanel();
+            Maindashboard.add(transactionPanel, BorderLayout.CENTER);
+            Maindashboard.revalidate();
+            Maindashboard.repaint();
+        });
+        
 
         // Footer Navigation
         JPanel footerNav = new JPanel();

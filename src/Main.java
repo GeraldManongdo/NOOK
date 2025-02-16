@@ -4,8 +4,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import Ui.Login;
-import Ui.Dashboard;
 
 public class Main extends JFrame {
 
@@ -71,13 +69,13 @@ public class Main extends JFrame {
     }
 
     private void createHistoryTable() {
-        String createTableSQL = "CREATE TABLE IF NOT EXISTS borrow_history (" +
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS history (" +
                 "history_id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "user_id INT, " +
                 "book_id INT, " +
                 "borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 "return_date DATETIME NULL, " +
-                "status ENUM('borrowed', 'returned') DEFAULT 'borrowed', " +
+                "status ENUM('Borrowed', 'Returned'), " +
                 "FOREIGN KEY (user_id) REFERENCES users(user_id), " + // Fixed FK reference
                 "FOREIGN KEY (book_id) REFERENCES books(book_id))";
 

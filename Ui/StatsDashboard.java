@@ -229,7 +229,7 @@ public class StatsDashboard extends JScrollPane {
     }
 
     private void updateCounts() {
-        updateCountFromTable("borrow_history", historyCountLabel);
+        updateCountFromTable("history", historyCountLabel);
         updateCountFromTable("users", usersCountLabel);
         updateCountFromTable("books", booksCountLabel);
         updateCountFromTable("penalty", penaltyCountLabel);
@@ -320,7 +320,7 @@ public class StatsDashboard extends JScrollPane {
     private Map<String, Integer> getBorrowedBooksData(int year) {
         Map<String, Integer> data = new LinkedHashMap<>();
         String query = "SELECT MONTHNAME(borrow_date) AS month, COUNT(*) AS count " +
-                       "FROM library.borrow_history WHERE YEAR(borrow_date) = ? " +
+                       "FROM library.history WHERE YEAR(borrow_date) = ? " +
                        "GROUP BY MONTH(borrow_date), MONTHNAME(borrow_date) " +
                        "ORDER BY MONTH(borrow_date)";
 

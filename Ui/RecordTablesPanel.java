@@ -64,7 +64,7 @@ public class RecordTablesPanel extends JPanel {
 	        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 20));
 	        panel1.add(lblNewLabel, BorderLayout.NORTH);
 	        // Initialize Table
-	        String[] columnNames = {"History ID", "User Name", "Book Name", "Borrow Date", "Return Date", "Status"};
+	        String[] columnNames = {"History ID", "User Name", "Book Name", "Borrow Date", "Return Date"};
 	        model = new DefaultTableModel(columnNames, 0);
 	        historyTable = new JTable(model);
 	        historyTable.setRowHeight(30);
@@ -132,11 +132,12 @@ public class RecordTablesPanel extends JPanel {
 	 private void loadHistoryFromDatabase() {
 	        try (Connection conn = DatabaseConnection.getConnection()) {
 	            // Optimized Query with JOIN
-	            String query = "SELECT bh.history_id, u.name AS user_name, b.title AS book_title, " +
-	                           "bh.borrow_date, bh.return_date, bh.status " +
-	                           "FROM borrow_history bh " +
-	                           "JOIN users u ON bh.user_id = u.user_id " +
-	                           "JOIN books b ON bh.book_id = b.book_id";
+	        	String query = "SELECT bh.history_id, u.name AS user_name, b.title AS book_title, " +
+	                    "bh.borrow_date, bh.return_date, bh.status " +
+	                    "FROM history bh " +
+	                    "JOIN users u ON bh.user_id = u.user_id " +
+	                    "JOIN books b ON bh.book_id = b.book_id " +
+	                    "WHERE bh.status = 'Returned'";
 
 	            try (PreparedStatement stmt = conn.prepareStatement(query);
 	                 ResultSet rs = stmt.executeQuery()) {
@@ -148,7 +149,6 @@ public class RecordTablesPanel extends JPanel {
 	                        rs.getString("book_title"),
 	                        rs.getDate("borrow_date"),
 	                        rs.getDate("return_date"),
-	                        rs.getString("status")
 	                    };
 	                    model.addRow(row);
 	                }
@@ -195,7 +195,7 @@ public class RecordTablesPanel extends JPanel {
 	            penaltyTable.getColumnModel().getColumn(0).setWidth(0);
 
 	        } catch (SQLException e) {
-	            JOptionPane.showMessageDialog(this, "Error loading history: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+	            JOptionPane.showMessageDialog(this, "Error loading Penalty: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
 	        }
 	    }
 	    private void loadUserFromDatabase() {
