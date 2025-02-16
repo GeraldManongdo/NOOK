@@ -45,10 +45,70 @@ public class BorrowingForm extends JFrame {
 
         // Save Button
         saveButton = new JButton("Save");
+        
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	BorrowingToDatabase();
+            }
+        });
         getContentPane().add(saveButton, BorderLayout.SOUTH);
 
         setVisible(true);
     }
+    
+    //saving transaction of borrowing books
+    private void BorrowingToDatabase() {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            String title = bookNameField.getText().trim();
+            String borrower = borrowerField.getText().trim();
+            String date_today = java.time.LocalDate.now().toString();
+
+            if (title.isEmpty() || borrower.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill in all fields!", "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Fetch user ID and book ID
+            String query = "SELECT u.user_id, b.book_id FROM users u JOIN books b ON u.name = ? AND b.title = ?";
+            try (PreparedStatement statement = conn.prepareStatement(query)) {
+                statement.setString(1, borrower);
+                statement.setString(2, title);
+
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (!resultSet.next()) {
+                        JOptionPane.showMessageDialog(this, "User or book not found. Please check again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    int userId = resultSet.getInt("user_id");
+                    int bookId = resultSet.getInt("book_id");
+
+                    // Insert borrowing transaction
+                    String insertSQL = "INSERT INTO history (user_id, book_id, borrow_date, status) VALUES (?, ?, ?, ?)";
+                    try (PreparedStatement insertStatement = conn.prepareStatement(insertSQL)) {
+                        insertStatement.setInt(1, userId);
+                        insertStatement.setInt(2, bookId);
+                        insertStatement.setString(3, date_today);
+                        insertStatement.setString(4, "Borrowed");
+
+                        int rowsInserted = insertStatement.executeUpdate();
+                        if (rowsInserted > 0) {
+                            JOptionPane.showMessageDialog(this, "Book borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Failed to borrow the book.", "Database Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+
 
     // Fetch book suggestions from database
     private ArrayList<String> getBookSuggestions(String query) {

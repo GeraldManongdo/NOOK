@@ -9,8 +9,8 @@
 	<classpathentry kind="src" path="Ui"/>
 	<classpathentry kind="src" path="Database"/>
 	<classpathentry kind="src" path="img"/>
-	<classpathentry kind="lib" path="C:/Users/pc/eclipse-workspace/NOOK/lib/mysql-connector-j-9.2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/pc/eclipse-workspace/NOOK/lib/jcommon-1.0.23.jar"/>
-	<classpathentry kind="lib" path="C:/Users/pc/eclipse-workspace/NOOK/lib/jfreechart-1.0.19.jar"/>
+	<classpathentry kind="lib" path="C:/Users/under/git/NOOK/lib/mysql-connector-j-9.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/under/git/NOOK/lib/jcommon-1.0.23.jar"/>
+	<classpathentry kind="lib" path="C:/Users/under/git/NOOK/lib/jfreechart-1.0.19.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
