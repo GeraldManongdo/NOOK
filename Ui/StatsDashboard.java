@@ -179,11 +179,11 @@ public class StatsDashboard extends JScrollPane {
 		lblForPenaltyTable.setPreferredSize(new Dimension(62, 20));
 		PenaltyTablePanel.add(lblForPenaltyTable, BorderLayout.NORTH);
 		
-	    String[] penaltyColumns = {"Penalty ID", "Reason", "Status"};
+	    String[] penaltyColumns = {"Penalty ID", "Reason", "Amount"};
 	    DefaultTableModel penaltyModel = new DefaultTableModel(penaltyColumns, 0);
 	    JTable penaltyTable = new JTable(penaltyModel);
 	    penaltyTable.setRowHeight(20);
-	    fetchTableData(penaltyModel, "SELECT penalty_id, reason, status FROM penalty LIMIT 5");
+	    fetchTableData(penaltyModel, "SELECT penalty_id, reason, amount FROM penalty LIMIT 5");
 	    JScrollPane penaltyScrollPane = new JScrollPane(penaltyTable);
 	    PenaltyTablePanel.add(penaltyScrollPane);
 

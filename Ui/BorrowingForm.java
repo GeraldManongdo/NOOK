@@ -95,6 +95,7 @@ public class BorrowingForm extends JFrame {
                         int rowsInserted = insertStatement.executeUpdate();
                         if (rowsInserted > 0) {
                             JOptionPane.showMessageDialog(this, "Book borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                            DashboardPanel.loadTransactionDashboard(); // This will refresh the dashboard panel
                             dispose();
                         } else {
                             JOptionPane.showMessageDialog(this, "Failed to borrow the book.", "Database Error", JOptionPane.ERROR_MESSAGE);

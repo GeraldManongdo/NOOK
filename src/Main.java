@@ -85,14 +85,11 @@ public class Main extends JFrame {
     private void createPenaltyTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS penalty (" +
                 "penalty_id INT AUTO_INCREMENT PRIMARY KEY, " +
-                "user_id INT, " +
-                "book_id INT, " +
+                "history_id INT, " +
                 "amount DECIMAL(10,2) NOT NULL, " +
-                "reason ENUM('late_return', 'lost_book', 'damage') NOT NULL, " +
-                "status ENUM('unpaid', 'paid') DEFAULT 'unpaid', " +
+                "reason ENUM('Late return', 'Lost Book', 'Damage Book') NOT NULL, " +
                 "date_issued DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                "FOREIGN KEY (user_id) REFERENCES users(user_id), " +
-                "FOREIGN KEY (book_id) REFERENCES books(book_id))";
+                "FOREIGN KEY (history_id) REFERENCES history(history_id))";
 
         executeUpdate(createTableSQL, "Error creating penalty table!");
     }

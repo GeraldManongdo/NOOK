@@ -85,7 +85,7 @@ public class RecordTablesPanel extends JPanel {
 	        lblNewLabel2.setFont(new Font("Tahoma", Font.BOLD, 20));
 	        panel2.add(lblNewLabel2, BorderLayout.NORTH);
 	        // Initialize Table
-	        String[] columnNames2 = {"History ID", "User Name", "Book Name","Penalty amount", "Reason", "Status", "Date issued"};
+	        String[] columnNames2 = {"Penalty ID", "User Name", "Book Name","Penalty amount", "Reason", "Date issued"};
 	        model = new DefaultTableModel(columnNames2, 0);
 	        penaltyTable = new JTable(model);
 	        penaltyTable.setRowHeight(30);
@@ -163,41 +163,36 @@ public class RecordTablesPanel extends JPanel {
 	            JOptionPane.showMessageDialog(this, "Error loading history: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
 	        }
 	    }
-	    private void loadPenaltyFromDatabase() {
-	        try (Connection conn = DatabaseConnection.getConnection()) {
-	            // Optimized Query with JOIN
-	            String query = "SELECT p.penalty_id, u.name AS user_name, b.title AS book_title, " +
-	                           "p.amount, p.amount, p.reason, p.status, p.date_issued " +
-	                           "FROM penalty p " +
-	                           "JOIN users u ON p.user_id = u.user_id " +
-	                           "JOIN books b ON p.book_id = b.book_id";
+	 private void loadPenaltyFromDatabase() {
+		    try (Connection conn = DatabaseConnection.getConnection()) {
+		        String query = "SELECT p.penalty_id, h.history_id, u.name AS user_name, b.title AS book_title, " +
+		                       "p.amount, p.reason, p.date_issued " +
+		                       "FROM penalty p " +
+		                       "JOIN history h ON p.history_id = h.history_id " +
+		                       "JOIN users u ON h.user_id = u.user_id " +
+		                       "JOIN books b ON h.book_id = b.book_id";
 
-	            try (PreparedStatement stmt = conn.prepareStatement(query);
-	                 ResultSet rs = stmt.executeQuery()) {
+		        try (PreparedStatement stmt = conn.prepareStatement(query);
+		             ResultSet rs = stmt.executeQuery()) {
 
-	                while (rs.next()) {
-	                    Object[] row = {
-	                        rs.getInt("penalty_id"),
-	                        rs.getString("user_name"),
-	                        rs.getString("book_title"),
-	                        rs.getBigDecimal("amount"),
-	                        rs.getString("reason"),
-	                        rs.getString("status"),
-	                        rs.getDate("date_issued")
-	                    };
-	                    model.addRow(row);
-	                }
-	            }
-
-	            // Hide the History ID column
-	            penaltyTable.getColumnModel().getColumn(0).setMinWidth(0);
-	            penaltyTable.getColumnModel().getColumn(0).setMaxWidth(0);
-	            penaltyTable.getColumnModel().getColumn(0).setWidth(0);
-
-	        } catch (SQLException e) {
-	            JOptionPane.showMessageDialog(this, "Error loading Penalty: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-	        }
-	    }
+		            while (rs.next()) {
+		                Object[] row = {
+		                    rs.getInt("penalty_id"),
+		                    rs.getInt("history_id"),
+		                    rs.getString("user_name"),
+		                    rs.getString("book_title"),
+		                    rs.getBigDecimal("amount"), // Corrected data type retrieval
+		                    rs.getString("reason"),
+		                    rs.getDate("date_issued")
+		                };
+		                model.addRow(row);
+		            }
+		        }
+		    } catch (SQLException e) {
+		        JOptionPane.showMessageDialog(this, "Error loading Penalty: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+		    }
+		}
+	 
 	    private void loadUserFromDatabase() {
 	        try (Connection conn = DatabaseConnection.getConnection()) {
 	            // Optimized Query with JOIN

@@ -88,11 +88,7 @@ public class DashboardPanel extends JPanel {
         btnTransaction.setForeground(Color.decode("#32418c"));
         Navigation.add(btnTransaction);
         btnTransaction.addActionListener(e -> {
-            Maindashboard.removeAll();
-            TransactionPanel transactionPanel = new TransactionPanel();
-            Maindashboard.add(transactionPanel, BorderLayout.CENTER);
-            Maindashboard.revalidate();
-            Maindashboard.repaint();
+        	loadTransactionDashboard();
         });
         
 
@@ -140,6 +136,13 @@ public class DashboardPanel extends JPanel {
         Maindashboard.removeAll();
         BookDashboard bookDashboard = new BookDashboard();
         Maindashboard.add(bookDashboard, BorderLayout.CENTER);
+        Maindashboard.revalidate();
+        Maindashboard.repaint();
+    }
+    public static void loadTransactionDashboard() {
+        Maindashboard.removeAll();
+        TransactionPanel transactionPanel = new TransactionPanel();
+        Maindashboard.add(transactionPanel, BorderLayout.CENTER);
         Maindashboard.revalidate();
         Maindashboard.repaint();
     }
