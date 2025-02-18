@@ -81,6 +81,11 @@ public class BookDashboard extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         panel_1.add(scrollPane, BorderLayout.CENTER);
+        
+        // Apply custom scrollbar UI
+        scrollPane.getVerticalScrollBar().setUI(new CustomScrollBarUI());
+        scrollPane.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
+
 
         // Load books from database
         loadBooksFromDatabase();

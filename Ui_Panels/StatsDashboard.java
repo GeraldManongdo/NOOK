@@ -1,17 +1,12 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-
 import java.awt.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.axis.CategoryAxis;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,24 +14,26 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
 
 public class StatsDashboard extends JScrollPane {
-	private DashboardPanel dashboardPanel;
     private JComboBox<Integer> yearComboBox;
     private ChartPanel chartPanel;
     private JPanel panel_3;
     private JLabel historyCountLabel, usersCountLabel, booksCountLabel, penaltyCountLabel;
 
     public StatsDashboard() {
-    	this.dashboardPanel = dashboardPanel;
         setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         getVerticalScrollBar().setUnitIncrement(16);
         setPreferredSize(new Dimension(1080, 720));
+        
+        // Apply custom scrollbar UI
+        getVerticalScrollBar().setUI(new CustomScrollBarUI());
+        getHorizontalScrollBar().setUI(new CustomScrollBarUI());
 
         JPanel contentPanel = new JPanel();
+        contentPanel.setBackground(Color.decode("#f3f3f7"));
         contentPanel.setBorder(new EmptyBorder(0, 0, 0, 20));
         contentPanel.setPreferredSize(new Dimension(1080, 820)); 
         setViewportView(contentPanel);
@@ -48,6 +45,7 @@ public class StatsDashboard extends JScrollPane {
         panel.setLayout(new GridLayout(0, 1, 0, 0));
 
         JLabel lblNewLabel = new JLabel("Dashboard");
+        lblNewLabel.setForeground(Color.decode("#32418C"));
         lblNewLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
         lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 25));
         panel.add(lblNewLabel);
@@ -58,6 +56,7 @@ public class StatsDashboard extends JScrollPane {
         
         // Number Analysis in Database
         JPanel panel_4 = new JPanel();
+        panel_4.setBackground(Color.decode("#f3f3f7"));
         panel_4.setPreferredSize(new Dimension(10, 120));
         MainDashboardPanel.add(panel_4, BorderLayout.NORTH);
         panel_4.setLayout(new GridLayout(0, 4, 10, 10)); 
@@ -68,10 +67,10 @@ public class StatsDashboard extends JScrollPane {
         booksCountLabel = new JLabel("0", SwingConstants.CENTER);
         penaltyCountLabel = new JLabel("0", SwingConstants.CENTER);
 
-        panel_4.add(createCard("History Transactions", new Color(70, 130, 180), historyCountLabel));
-        panel_4.add(createCard("Users", new Color(34, 139, 34), usersCountLabel));
-        panel_4.add(createCard("Books", new Color(178, 34, 34), booksCountLabel));
-        panel_4.add(createCard("Penalties", new Color(178, 34, 34), penaltyCountLabel));
+        panel_4.add(createCard("Transaction", Color.decode("#32418c"), historyCountLabel));
+        panel_4.add(createCard("Users", Color.decode("#f9d01c"), usersCountLabel));
+        panel_4.add(createCard("Books", Color.decode("#00bf63"), booksCountLabel));
+        panel_4.add(createCard("Penalties", Color.decode("#ff3131"), penaltyCountLabel));
         updateCounts();
      
         // Right side in Main panel for legend
@@ -117,21 +116,25 @@ public class StatsDashboard extends JScrollPane {
         
         // Bottom side where i put Tables
         JPanel panel_5 = new JPanel();
+        panel_5.setBackground(Color.decode("#f3f3f7"));
         panel_5.setPreferredSize(new Dimension(10, 208));
         panel_5.setBorder(new EmptyBorder(10, 20, 20, 20));
         MainDashboardPanel.add(panel_5, BorderLayout.SOUTH);
         panel_5.setLayout(new BorderLayout(0, 0));
         
         JLabel lblForPanel_5 = new JLabel("Records");
+        lblForPanel_5.setForeground(Color.decode("#32418C"));
         lblForPanel_5.setFont(new Font("Tahoma", Font.BOLD, 20));
         panel_5.add(lblForPanel_5, BorderLayout.NORTH);
         
 		JPanel tableColumnDashboard = new JPanel();
+		tableColumnDashboard.setBackground(Color.decode("#f3f3f7"));
 		panel_5.add(tableColumnDashboard, BorderLayout.CENTER);
 		tableColumnDashboard.setLayout(new GridLayout(0, 3, 20, 0));
 		
 		// Books Table
 		JPanel BookTablePanel = new JPanel();
+		BookTablePanel.setBackground(Color.decode("#f3f3f7"));
 		BookTablePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 		tableColumnDashboard.add(BookTablePanel);
 		BookTablePanel.setLayout(new BorderLayout(0, 0));
@@ -151,6 +154,7 @@ public class StatsDashboard extends JScrollPane {
         
         // Users Table
         JPanel UserTablePanel = new JPanel();
+        UserTablePanel.setBackground(Color.decode("#f3f3f7"));
         UserTablePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 		tableColumnDashboard.add(UserTablePanel);
 		UserTablePanel.setLayout(new BorderLayout(0, 0));
@@ -170,6 +174,7 @@ public class StatsDashboard extends JScrollPane {
 		
 	    // Penalties Table
 		JPanel PenaltyTablePanel = new JPanel();
+		PenaltyTablePanel.setBackground(Color.decode("#f3f3f7"));
 		PenaltyTablePanel.setBorder(new EmptyBorder(10, 0, 0, 0));
 		tableColumnDashboard.add(PenaltyTablePanel);
 		PenaltyTablePanel.setLayout(new BorderLayout(0, 0));
@@ -210,17 +215,17 @@ public class StatsDashboard extends JScrollPane {
     
     // Starting of Stats of database tables
     private JPanel createCard(String title, Color color, JLabel countLabel) {
-        JPanel panel = new JPanel();
+        RoundedPanel panel = new RoundedPanel(10);
         panel.setLayout(new BorderLayout());
         panel.setBackground(color);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         countLabel.setFont(new Font("Arial", Font.BOLD, 30));
-        countLabel.setForeground(Color.WHITE);
+        countLabel.setForeground(Color.decode("#ffffff"));
 
         JLabel textLabel = new JLabel(title, SwingConstants.CENTER);
         textLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        textLabel.setForeground(Color.WHITE);
+        textLabel.setForeground(Color.decode("#ffffff"));
 
         panel.add(countLabel, BorderLayout.CENTER);
         panel.add(textLabel, BorderLayout.SOUTH);

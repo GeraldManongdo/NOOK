@@ -8,7 +8,8 @@ import java.sql.Statement;
 public class Main extends JFrame {
 
     private static final long serialVersionUID = 1L;
-
+    
+    // Main class 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
@@ -42,11 +43,12 @@ public class Main extends JFrame {
         dispose();
     }
 
+    //Creating users table in database
     private void createUserTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS users (" +
                 "user_id INT PRIMARY KEY AUTO_INCREMENT, " +
                 "name VARCHAR(255), " +
-                "role ENUM('student', 'admin'), " +
+                "role ENUM('student', 'admin'), " + // Only this can put in database
                 "email VARCHAR(255), " +
                 "password VARCHAR(255), " +
                 "section VARCHAR(255), " +
@@ -55,6 +57,7 @@ public class Main extends JFrame {
         executeUpdate(createTableSQL, "Error creating users table!");
     }
 
+    //Creating books table in database
     private void createBooksTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS books (" +
                 "book_id INT PRIMARY KEY AUTO_INCREMENT, " +
@@ -63,11 +66,12 @@ public class Main extends JFrame {
                 "genre VARCHAR(100), " +
                 "pages INT, " +
                 "publication_date DATE, " +
-                "availability VARCHAR(255))";
+                "availability ENUM('Borrowed', 'Available', 'Unavailable'))"; // Only this can put in database
 
         executeUpdate(createTableSQL, "Error creating books table!");
     }
 
+    //Creating history table in database
     private void createHistoryTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS history (" +
                 "history_id INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -75,25 +79,27 @@ public class Main extends JFrame {
                 "book_id INT, " +
                 "borrow_date DATETIME DEFAULT CURRENT_TIMESTAMP, " +
                 "return_date DATETIME NULL, " +
-                "status ENUM('Borrowed', 'Returned'), " +
-                "FOREIGN KEY (user_id) REFERENCES users(user_id), " + // Fixed FK reference
-                "FOREIGN KEY (book_id) REFERENCES books(book_id))";
+                "status ENUM('Borrowed', 'Returned'), " + // Only this can put in database
+                "FOREIGN KEY (user_id) REFERENCES users(user_id), " + // Reference
+                "FOREIGN KEY (book_id) REFERENCES books(book_id))"; // Reference
 
         executeUpdate(createTableSQL, "Error creating borrow_history table!");
     }
-
+    
+    //Creating penalty table in database
     private void createPenaltyTable() {
         String createTableSQL = "CREATE TABLE IF NOT EXISTS penalty (" +
                 "penalty_id INT AUTO_INCREMENT PRIMARY KEY, " +
                 "history_id INT, " +
                 "amount DECIMAL(10,2) NOT NULL, " +
-                "reason ENUM('Late return', 'Lost Book', 'Damage Book') NOT NULL, " +
+                "reason ENUM('Late return', 'Lost Book', 'Damage Book') NOT NULL, " + // Only this can put in database
                 "date_issued DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-                "FOREIGN KEY (history_id) REFERENCES history(history_id))";
+                "FOREIGN KEY (history_id) REFERENCES history(history_id))"; // Reference
 
         executeUpdate(createTableSQL, "Error creating penalty table!");
     }
 
+    //Show a panel if their is an error to the database
     private void executeUpdate(String sql, String errorMessage) {
         try (Connection connection = DatabaseConnection.getConnection();
              Statement statement = connection.createStatement()) {

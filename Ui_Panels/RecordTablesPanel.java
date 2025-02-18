@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
+
 import java.awt.*;
 
 public class RecordTablesPanel extends JPanel {
@@ -68,11 +69,21 @@ public class RecordTablesPanel extends JPanel {
 	        model = new DefaultTableModel(columnNames, 0);
 	        historyTable = new JTable(model);
 	        historyTable.setRowHeight(30);
+            historyTable.getColumnModel().getColumn(0).setPreferredWidth(20);  // History ID
+            historyTable.getColumnModel().getColumn(1).setPreferredWidth(200); // User Name
+            historyTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Book Title
+            historyTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Borrow Date
+            historyTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Return Date
 
 	        JScrollPane scrollPane = new JScrollPane(historyTable);
 	        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+	        
+	        // Apply custom scrollbar UI
+	        scrollPane.getVerticalScrollBar().setUI(new CustomScrollBarUI());
+	        scrollPane.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
+	        
 	        panel1.add(scrollPane);
 	        // Load History from database
 	        loadHistoryFromDatabase();
@@ -89,12 +100,22 @@ public class RecordTablesPanel extends JPanel {
 	        model = new DefaultTableModel(columnNames2, 0);
 	        penaltyTable = new JTable(model);
 	        penaltyTable.setRowHeight(30);
+	        penaltyTable.getColumnModel().getColumn(0).setPreferredWidth(20);  // Penalty ID
+	        penaltyTable.getColumnModel().getColumn(1).setPreferredWidth(200); // User Name
+	        penaltyTable.getColumnModel().getColumn(2).setPreferredWidth(200); // Book Title
+	        penaltyTable.getColumnModel().getColumn(3).setPreferredWidth(100); // Penalty amount
+	        penaltyTable.getColumnModel().getColumn(4).setPreferredWidth(100); // Reason
+	        penaltyTable.getColumnModel().getColumn(5).setPreferredWidth(100); // Date issued
 
 	        JScrollPane scrollPane2 = new JScrollPane(penaltyTable);
 	        scrollPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	        scrollPane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	        scrollPane2.getVerticalScrollBar().setUnitIncrement(16);
 	        panel2.add(scrollPane2);
+	        
+	        // Apply custom scrollbar UI
+	        scrollPane2.getVerticalScrollBar().setUI(new CustomScrollBarUI());
+	        scrollPane2.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
 
 	        // Load Penalty from database
 	        loadPenaltyFromDatabase();
@@ -117,6 +138,10 @@ public class RecordTablesPanel extends JPanel {
 	        scrollPane3.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 	        scrollPane3.getVerticalScrollBar().setUnitIncrement(16);
 	        panel3.add(scrollPane3);
+	        
+	        // Apply custom scrollbar UI
+	        scrollPane3.getVerticalScrollBar().setUI(new CustomScrollBarUI());
+	        scrollPane3.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
 
 	        // Load user from database
 	        loadUserFromDatabase();
@@ -153,11 +178,7 @@ public class RecordTablesPanel extends JPanel {
 	                    model.addRow(row);
 	                }
 	            }
-
-	            // Hide the History ID column
-	            historyTable.getColumnModel().getColumn(0).setMinWidth(0);
-	            historyTable.getColumnModel().getColumn(0).setMaxWidth(0);
-	            historyTable.getColumnModel().getColumn(0).setWidth(0);
+	           
 
 	        } catch (SQLException e) {
 	            JOptionPane.showMessageDialog(this, "Error loading history: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
@@ -178,10 +199,9 @@ public class RecordTablesPanel extends JPanel {
 		            while (rs.next()) {
 		                Object[] row = {
 		                    rs.getInt("penalty_id"),
-		                    rs.getInt("history_id"),
 		                    rs.getString("user_name"),
 		                    rs.getString("book_title"),
-		                    rs.getBigDecimal("amount"), // Corrected data type retrieval
+		                    rs.getBigDecimal("amount"),
 		                    rs.getString("reason"),
 		                    rs.getDate("date_issued")
 		                };
@@ -212,11 +232,6 @@ public class RecordTablesPanel extends JPanel {
 	                    model.addRow(row);
 	                }
 	            }
-
-	            // Hide the student_id column
-	            userTable.getColumnModel().getColumn(0).setMinWidth(0); 
-	            userTable.getColumnModel().getColumn(0).setMaxWidth(0);
-	            userTable.getColumnModel().getColumn(0).setWidth(0);
 
 	        } catch (SQLException e) {
 	            JOptionPane.showMessageDialog(this, "Error loading users: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);

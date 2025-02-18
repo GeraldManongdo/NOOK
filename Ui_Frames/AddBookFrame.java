@@ -7,17 +7,17 @@ import java.sql.*;
 public class AddBookFrame extends JFrame {
 
     private JTextField bookNameField, authorField, genreField, pagesField, publicationDateField;
-    private BookDashboard dashboardPanel; // Reference to DashboardPanel
+    private BookDashboard dashboardPanel; 
     private JButton saveButton;
 
     public AddBookFrame(BookDashboard bookDashboard) {
         this.dashboardPanel = bookDashboard; // Store reference to DashboardPanel
 
-        setTitle("Add Book");
+        setTitle("NOOK - Add Book");
         setSize(400, 313);
         getContentPane().setLayout(new BorderLayout());
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
+        setResizable(false); // Disable the changing size of the frame 
+        setIconImage(new ImageIcon(getClass().getResource("NOOK-icon.png")).getImage()); // Adding icon in the top corner of the frame
         setLocationRelativeTo(null); // Center the window
 
         JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
@@ -98,7 +98,6 @@ public class AddBookFrame extends JFrame {
 
                 int rowsInserted = preparedStatement.executeUpdate();
                 if (rowsInserted > 0) {
-                    JOptionPane.showMessageDialog(this, "Book added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
                     dispose(); // Close the window
                     if (dashboardPanel != null) {
                         dashboardPanel.loadBooksDashboard(); // Reload Dashboard

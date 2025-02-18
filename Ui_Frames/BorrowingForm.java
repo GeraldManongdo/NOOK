@@ -8,12 +8,14 @@ public class BorrowingForm extends JFrame {
     private JTextField bookNameField, borrowerField;
     private JButton saveButton;
     private JPopupMenu popupBook, popupBorrower;
-    private Connection conn = DatabaseConnection.getConnection(); // Use your existing connection
+    private Connection conn = DatabaseConnection.getConnection(); // Get the connection to the database source folder
 
     public BorrowingForm() {
-        setTitle("Borrowing Form");
+        setTitle("NOOK - Borrowing Form");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setResizable(false); // Disable the changing size of the frame 
+        setIconImage(new ImageIcon(getClass().getResource("NOOK-icon.png")).getImage()); // Adding icon in the top corner of the frame
         setLocationRelativeTo(null); // Center the window
 
         JPanel inputPanel = new JPanel(new GridLayout(3, 2, 5, 5));
@@ -70,14 +72,14 @@ public class BorrowingForm extends JFrame {
             }
 
             // Fetch user ID and book ID
-            String query = "SELECT u.user_id, b.book_id FROM users u JOIN books b ON u.name = ? AND b.title = ?";
+            String query = "SELECT u.user_id, b.book_id FROM users u JOIN books b ON u.name = ? AND b.title = ? AND b.availability = 'Available'";
             try (PreparedStatement statement = conn.prepareStatement(query)) {
                 statement.setString(1, borrower);
                 statement.setString(2, title);
 
                 try (ResultSet resultSet = statement.executeQuery()) {
                     if (!resultSet.next()) {
-                        JOptionPane.showMessageDialog(this, "User or book not found. Please check again.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "User or book not found, or book is not available.", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -94,9 +96,16 @@ public class BorrowingForm extends JFrame {
 
                         int rowsInserted = insertStatement.executeUpdate();
                         if (rowsInserted > 0) {
+                            // Update book status to 'Borrowed'
+                            String updateBookSQL = "UPDATE books SET availability = 'Borrowed' WHERE book_id = ?";
+                            try (PreparedStatement updateStatement = conn.prepareStatement(updateBookSQL)) {
+                                updateStatement.setInt(1, bookId);
+                                updateStatement.executeUpdate();
+                            }
+
                             JOptionPane.showMessageDialog(this, "Book borrowed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                            DashboardPanel.loadTransactionDashboard(); // This will refresh the dashboard panel
-                            dispose();
+                            DashboardPanel.loadTransactionDashboard(); // Refresh the dashboard panel
+                            dispose(); // Close the window
                         } else {
                             JOptionPane.showMessageDialog(this, "Failed to borrow the book.", "Database Error", JOptionPane.ERROR_MESSAGE);
                         }
@@ -111,12 +120,13 @@ public class BorrowingForm extends JFrame {
 
 
 
+
     // Fetch book suggestions from database
     private ArrayList<String> getBookSuggestions(String query) {
         ArrayList<String> results = new ArrayList<>();
         if (query.length() < 1) return results;
         try {
-            PreparedStatement ps = conn.prepareStatement("SELECT title FROM books WHERE title LIKE ?");
+        	PreparedStatement ps = conn.prepareStatement("SELECT title FROM books WHERE title LIKE ? AND availability = 'Available'");
             ps.setString(1, query + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {

@@ -21,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import java.sql.Statement;
+import java.awt.Cursor;
 
 public class Login extends JPanel {
 
@@ -106,13 +107,15 @@ public class Login extends JPanel {
         LoginForm.add(Form, BorderLayout.CENTER);
         Form.setLayout(null);
 
-        JPanel panel_2 = new JPanel();
-        panel_2.setBounds(63, 24, 231, 45);
+        RoundedPanel panel_2 = new RoundedPanel(10);
+        panel_2.setPreferredSize(new Dimension(10, 100));
+        panel_2.setBounds(63, 24, 231, 47);
         Form.add(panel_2);
         panel_2.setLayout(null);
         panel_2.setBackground(Color.WHITE);
 
         JLabel lblNewLabel_2 = new JLabel("Email:");
+        lblNewLabel_2.setBorder(new EmptyBorder(5, 0, 0, 0));
         lblNewLabel_2.setForeground(Color.decode("#0a003b"));
         lblNewLabel_2.setFont(new Font("Tahoma", Font.BOLD, 11));
         lblNewLabel_2.setBounds(10, 0, 46, 14);
@@ -127,13 +130,14 @@ public class Login extends JPanel {
         usernameField.setBounds(10, 14, 211, 29);
         panel_2.add(usernameField);
 
-        JPanel panel_2_1 = new JPanel();
+        RoundedPanel panel_2_1 = new RoundedPanel(10);
         panel_2_1.setLayout(null);
         panel_2_1.setBackground(Color.WHITE);
-        panel_2_1.setBounds(63, 80, 231, 45);
+        panel_2_1.setBounds(63, 89, 231, 47);
         Form.add(panel_2_1);
 
         JLabel lblNewLabel_2_1 = new JLabel("Password:");
+        lblNewLabel_2_1.setBorder(new EmptyBorder(5, 0, 0, 0));
         lblNewLabel_2_1.setForeground(Color.decode("#0a003b"));
         lblNewLabel_2_1.setFont(new Font("Tahoma", Font.BOLD, 11));
         lblNewLabel_2_1.setBounds(10, 0, 148, 14);
@@ -146,19 +150,15 @@ public class Login extends JPanel {
         passwordField.setBounds(10, 14, 211, 31);
         panel_2_1.add(passwordField);
 
-        JCheckBox chckbxNewCheckBox = new JCheckBox("Remember me");
-        chckbxNewCheckBox.setVerticalTextPosition(SwingConstants.BOTTOM);
-        chckbxNewCheckBox.setBorder(new EmptyBorder(0, 0, 0, 0));
-        chckbxNewCheckBox.setFont(new Font("Tahoma", Font.PLAIN, 10));
-        chckbxNewCheckBox.setBounds(65, 126, 139, 23);
-        Form.add(chckbxNewCheckBox);
 
-        JButton loginButton = new JButton("LOGIN");
+        RoundedButton loginButton = new RoundedButton("LOGIN");
+        loginButton.setPreferredSize(new Dimension(63, 100));
+        loginButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         loginButton.setBackground(Color.decode("#0a003b"));
         loginButton.setBorder(null);
         loginButton.setForeground(Color.WHITE);
         loginButton.setFont(new Font("Tahoma", Font.BOLD, 15));
-        loginButton.setBounds(63, 169, 231, 38);
+        loginButton.setBounds(63, 172, 231, 47);
         Form.add(loginButton);
 
         loginButton.addActionListener(e -> {

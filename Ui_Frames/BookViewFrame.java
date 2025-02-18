@@ -12,13 +12,16 @@ public class BookViewFrame extends JFrame {
 
     public BookViewFrame(int bookId) {
         this.bookId = bookId;
-        this.conn = DatabaseConnection.getConnection(); // Get the connection
+        this.conn = DatabaseConnection.getConnection(); // Get the connection from database source folder
 
-        setTitle("View Book");
+        setTitle("NOOK - View Book");
         setBounds(200, 200, 432, 357);
-        setResizable(false);
+        setResizable(false); // Disable the changing size of the frame 
+        setIconImage(new ImageIcon(getClass().getResource("NOOK-icon.png")).getImage()); // Adding icon in the top corner of the frame
+        setLocationRelativeTo(null); // Center the window
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout());
+        
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -140,7 +143,7 @@ public class BookViewFrame extends JFrame {
                 int rowsUpdated = preparedStatement.executeUpdate();
                 if (rowsUpdated > 0) {
                     DashboardPanel.loadBooksDashboard(); // This will refresh the dashboard panel
-                    dispose();
+                    dispose(); // Close the window
                 } else {
                     JOptionPane.showMessageDialog(this, "Failed to update book details.", "Database Error", JOptionPane.ERROR_MESSAGE);
                 }
