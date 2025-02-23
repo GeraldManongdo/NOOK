@@ -12,6 +12,7 @@
 	<classpathentry kind="src" path="Ui_Panels"/>
 	<classpathentry kind="src" path="Ui_Frames"/>
 	<classpathentry kind="src" path="Img"/>
+	<classpathentry kind="src" path="Book Img"/>
 	<classpathentry kind="lib" path="C:/Users/pc/eclipse-workspace/NOOK/lib/mysql-connector-j-9.2.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pc/eclipse-workspace/NOOK/lib/jcommon-1.0.23.jar"/>
 	<classpathentry kind="lib" path="C:/Users/pc/eclipse-workspace/NOOK/lib/jfreechart-1.0.19.jar"/>
