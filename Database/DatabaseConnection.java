@@ -5,7 +5,7 @@ import java.sql.SQLException;
 public class DatabaseConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/library";
     private static final String USER = "root";
-    private static final String PASSWORD = "Confractus091205"; //Change the password
+    private static final String PASSWORD = "alexander_0114"; //Change the password
 
     public static Connection getConnection() {
         try {

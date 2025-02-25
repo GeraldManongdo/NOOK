@@ -66,6 +66,7 @@ public class Main extends JFrame {
                 "genre VARCHAR(100), " +
                 "pages INT, " +
                 "publication_date DATE, " +
+                "book_image BLOB," +
                 "availability ENUM('Borrowed', 'Available', 'Unavailable'))"; // Only this can put in database
 
         executeUpdate(createTableSQL, "Error creating books table!");
